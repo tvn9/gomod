@@ -38,7 +38,7 @@ func uploadFiles(w http.ResponseWriter, r *http.Request) {
 		AllowedFileTypes: []string{"image/jpeg", "image/png", "image/gif"},
 	}
 
-	files, err := t.UploadFiles(r, "./uploads")
+	files, err := t.UploadFile(r, "./uploads")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
