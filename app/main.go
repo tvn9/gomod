@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"githum.com/tvn9/gomodules/toolkit"
+	"github.com/tvn9/gomod/toolkit"
 )
 
 func main() {

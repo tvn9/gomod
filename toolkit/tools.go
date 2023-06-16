@@ -13,29 +13,28 @@ import (
 
 const randomStringSource = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_+"
 
-// Tools is a type used to instantiate this module. Any veriable of this type will have access
-// to all the methods with the receiver *Tools
+// Tools is the type used to instantiate the module. Any variable of this type will have
+// access to the methods with the receiver *Tools
 type Tools struct {
 	MaxFileSize      int
 	AllowedFileTypes []string
 }
 
-// RandomString returns a string of random characters of length n, using RandomStringSource
+// RandomeString returns a string of random characters of length n, using randomStringSource
 // as the source for the string
 func (t *Tools) RandomString(n int) string {
-	s, r := make([]rune, n), []rune(randomStringSource)
-	fmt.Printf("s = %v, r = %v\n", s, r)
-	fmt.Printf("len of r %d\n", len(r))
+	s := make([]rune, n)
+	r := []rune(randomStringSource)
+
 	for i := range s {
 		p, _ := rand.Prime(rand.Reader, len(r))
-		fmt.Println(p)
 		x, y := p.Uint64(), uint64(len(r))
 		s[i] = r[x%y]
 	}
 	return string(s)
 }
 
-// UploadedFile is a truct used to save information about an uploadedFile file
+// UploadFile is a struct used to save information about an uploaded file
 type UploadedFile struct {
 	NewFileName      string
 	OriginalFileName string
@@ -56,7 +55,7 @@ func (t *Tools) UploadFile(r *http.Request, uploadDir string, rename ...bool) ([
 
 	err := r.ParseMultipartForm(int64(t.MaxFileSize))
 	if err != nil {
-		return nil, errors.New("the uploaded file is too big")
+		return nil, errors.New("the uploaded file is to big")
 	}
 
 	for _, fHeaders := range r.MultipartForm.File {
@@ -68,14 +67,17 @@ func (t *Tools) UploadFile(r *http.Request, uploadDir string, rename ...bool) ([
 					return nil, err
 				}
 				defer infile.Close()
+
 				buff := make([]byte, 512)
 				_, err = infile.Read(buff)
 				if err != nil {
 					return nil, err
 				}
-				allowed := false
 
+				// TODO: check to see if the file type is permitted
+				allowed := false
 				fileType := http.DetectContentType(buff)
+
 				if len(t.AllowedFileTypes) > 0 {
 					for _, x := range t.AllowedFileTypes {
 						if strings.EqualFold(fileType, x) {
@@ -113,6 +115,7 @@ func (t *Tools) UploadFile(r *http.Request, uploadDir string, rename ...bool) ([
 					}
 					uploadedFile.FileSize = fileSize
 				}
+
 				uploadedFiles = append(uploadedFiles, &uploadedFile)
 				return uploadedFiles, nil
 

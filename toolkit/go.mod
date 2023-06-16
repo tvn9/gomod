@@ -1,3 +1,3 @@
-module githum.com/tvn9/gomodules/toolkit
+module github.com/tvn9/gomod/toolkit
 
-go 1.19
+go 1.20
